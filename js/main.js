@@ -1,8 +1,19 @@
-// Simulation params
-const x = 5
-const y = 5
+////////////////////////////////////////////////////////////////////////////////
+// Game of Life params
+const x = 100
+const y = 100
 const initP = 0.33
-const ms = 1000
+const ms = 100
+const cellSize = 8
+////////////////////////////////////////////////////////////////////////////////
+
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+const getCanvas = () => {
+  return document.getElementById("myCanvas")
+}
 
 const initGrid = (x, y, initP) => {
   return Array(y)
@@ -62,17 +73,28 @@ const updateGrid = (grid) => {
   }
 }
 
-const sleep = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+const drawGrid = (grid, canvas, ctx, cellSize) => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[0].length; x++) {
+      const xStart = x * cellSize
+      const yStart = y * cellSize
+      ctx.fillStyle = grid[y][x] == 1 ? "white" : "black"
+      ctx.fillRect(xStart, yStart, cellSize, cellSize)
+    }
+  }
 }
 
-const gameOfLife = async (x, y, initP, ms) => {
-  grid = initGrid(x, y, initP)
+const gameOfLife = async (x, y, initP, ms, cellSize) => {
+  let grid = initGrid(x, y, initP)
+  let canvas = getCanvas()
+  let ctx = canvas.getContext("2d")
+
   while (true) {
-    console.log(grid)
+    drawGrid(grid, canvas, ctx, cellSize)
     updateGrid(grid)
     await sleep(ms)
   }
 }
 
-gameOfLife(x, y, initP, ms)
+gameOfLife(x, y, initP, ms, cellSize)
